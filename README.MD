@@ -17,7 +17,7 @@ pip install -u requirements.txt
 ```
 
 # Running
-1. In the res directory, create a *keywords.txt* file
+1. In the res directory, create a *keywords.txt* file and a *asins.txt* file
 2. In the main directory create a .env file with the settings:
 ```
 REQUEST_TIMEOUT=1
@@ -32,7 +32,7 @@ python main.py
 
 5. show database.db database data
 ```bash
-python draw.py
+python draw.py --keyword 'camera' --asin B0BXRMLJCM
 ```
 # How does it work?
 
@@ -41,6 +41,7 @@ python draw.py
 3. The *ParseClient* client is initialized
 4. Parsing N pages per keyword
 5. After receiving the data about the keyword, the results are saved to the database in the columns: *dt, product_id (Get from product url), keyword, rank_type (organic/sponsored), rank, page_number, bestseller_badge (True/False), amazonchoice_badge (True/False)*
+6. Draw database data, parameter keyword and asin are optional
 
 # Saved data example
 
