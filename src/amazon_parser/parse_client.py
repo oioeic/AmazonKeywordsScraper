@@ -1,4 +1,5 @@
 import json
+import urllib
 import itertools
 import collections
 
@@ -30,7 +31,7 @@ class ParseClient:
         """Init a parse client with request executor"""
         self._request_executor = RequestExecutor(request_timeout=Config.REQUEST_TIMEOUT)
 
-    def _extract_page(self, page_html: str, keyword: str, page_number: int) -> List[ProductData]:
+    def _extract_page(self, page_html: str, keyword: str, asins: list, page_number: int) -> List[ProductData]:
         """Extract page to dict format with data"""
 
         product_data_list: List[ProductData] = []
@@ -45,10 +46,12 @@ class ParseClient:
             self._request_executor.set_random_user_agent()
 
         for product in products:
+            product_id=self._get_product_id(product)
+            if product_id not in asins:continue
 
             product_model = ProductData(
                 dt=datetime.now(),
-                product_id=self._get_product_id(product),
+                product_id=product_id,
                 keyword=keyword,
                 rank_type=self._get_product_rank_type(product, products_by_type),
                 rank=self._get_product_rank(product, products_by_type),
@@ -62,7 +65,7 @@ class ParseClient:
 
         return product_data_list
 
-    def parse_keyword(self, keyword: str, page_per_keyword: int) -> List[ProductData]:
+    def parse_keyword(self, keyword: str, asins: list, page_per_keyword: int) -> List[ProductData]:
         """Parse all detailed data for keyword"""
         product_page_list = []
 
@@ -71,7 +74,7 @@ class ParseClient:
             html_data = self._request_executor.get_search_page_html(keyword=keyword,
                                                                     page=page)
             if html_data:
-                page_data = self._extract_page(html_data, keyword=keyword, page_number=page)
+                page_data = self._extract_page(html_data, keyword=keyword, asins=asins, page_number=page)
                 product_page_list.append(page_data)
 
         return list(itertools.chain(*product_page_list))
@@ -112,7 +115,8 @@ class ParseClient:
         if 'slredirect' in url:
             url = self._request_executor.get_normal_url(url)
 
-        product_id = url.split("/")[-2]
+        decode_url = urllib.parse.unquote(url)
+        product_id = decode_url.split("/")[-2]
         logger.info(f"Get product id: {product_id}")
         return product_id
 

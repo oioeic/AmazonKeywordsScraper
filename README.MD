@@ -30,6 +30,10 @@ python main.py
 ```
 4. After a while, the data will begin to appear in the database.db database
 
+5. show database.db database data
+```bash
+python draw.py
+```
 # How does it work?
 
 1. After start, the res/keywords.txt file opens and keywords for search are loaded

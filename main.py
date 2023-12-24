@@ -8,6 +8,7 @@ from db import db
 
 if __name__ == '__main__':
     keyword_list = load_keywords('res/keywords.txt')
+    asin_list = load_keywords('res/asins.txt')
     db.create_tables([ProductORM])
 
     client = ParseClient()
@@ -16,7 +17,7 @@ if __name__ == '__main__':
         client.set_location(zip_code=Config.PARSING_ZIP_CODE)
 
         for keyword in keyword_list:
-            keyword_data = client.parse_keyword(keyword, page_per_keyword=Config.PAGE_PER_KEYWORD)
+            keyword_data = client.parse_keyword(keyword, asin_list, page_per_keyword=Config.PAGE_PER_KEYWORD)
             product_crud.create_many(obj_in_list=keyword_data)
     finally:
         db.close()
